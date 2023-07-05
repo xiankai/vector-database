@@ -23,7 +23,6 @@ jobs:
             User $SSH_USER
             IdentityFile ~/.ssh/vps.key
             StrictHostKeyChecking no
-            RemoteCommand cd vector-database && bash -l
           END
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
