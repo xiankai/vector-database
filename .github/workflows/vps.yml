@@ -30,4 +30,4 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
 
       - name: Script
-        run: ssh vps './vector-database/scripts/deploy.sh'
+        run: ssh vps './vector-database/deploy/deploy.sh'
