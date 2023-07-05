@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.utils import log_sql
+from utils import log_sql
 import datetime
 
 from txtai_datastore.embeddings import embeddings
