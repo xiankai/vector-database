@@ -33,4 +33,4 @@ jobs:
         run: ssh vps 'cd vector-database && git reset --hard origin/master && git pull && chmod +x deploy/deploy.sh'
 
       - name: Python setup and start server
-        run: ssh vps './vector-database/deploy/deploy.sh'
+        run: ssh vps 'cd vector-database && ./deploy/deploy.sh'
