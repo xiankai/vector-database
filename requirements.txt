@@ -1,4 +1,3 @@
 txtai
 fastapi
-uvicorn
 gunicorn
