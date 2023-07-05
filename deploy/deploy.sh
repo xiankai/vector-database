@@ -3,4 +3,4 @@ source venv/bin/activate
 pip install -r requirements.txt
 # 1 worker already takes up 500MB of RAM... and my linode nano only has 1 GB of RAM
 pkill gunicorn
-nohup gunicorn --bind 0.0.0.0:80 -k uvicorn.workers.UvicornWorker --workers 1 app.main:app &
+nohup gunicorn --bind 0.0.0.0:80 -k uvicorn.workers.UvicornWorker --workers 1 app.main:app > nohup.out &

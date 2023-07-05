@@ -1,4 +1,4 @@
 __pycache__
 venv
 txtai_embeddings
-logs
+nohup.out
