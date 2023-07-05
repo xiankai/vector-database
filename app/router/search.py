@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from utils import log_sql
+from app.utils import log_sql
 import datetime
 
-from txtai_datastore.embeddings import embeddings
-from txtai_datastore.response import format_response
+from app.txtai_datastore.embeddings import embeddings
+from app.txtai_datastore.response import format_response
 
 router = APIRouter()
 

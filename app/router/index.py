@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from txtai_datastore.embeddings import embeddings
-from txtai_datastore.response import Document
+from app.txtai_datastore.embeddings import embeddings
+from app.txtai_datastore.response import Document
 
 router = APIRouter()
 

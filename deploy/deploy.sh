@@ -3,5 +3,5 @@ cd vector-database
 git pull
 source venv/bin/activate
 pip install -r requirements.txt
-cd app
-gunicorn -k uvicorn.workers.UvicornWorker main:app
+pkill supervisord
+supervisord -n -c deploy/supervisord.conf
