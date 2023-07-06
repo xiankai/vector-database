@@ -40,6 +40,6 @@ async def search(
 
 @router.get("/day")
 async def day(date: datetime.date, recipient: str, source: str):
-  docs = embeddings.search(f'SELECT * FROM txtai WHERE date = $date AND recipient = $recipient AND source = $source')
+  docs = embeddings.search(f'SELECT * FROM txtai WHERE date = {date} AND recipient = {recipient} AND source = {source}')
   return format_response(docs)
 
