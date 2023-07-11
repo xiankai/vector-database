@@ -1,6 +1,6 @@
 from app.main import app
 from modal import Image, Stub, asgi_app
-stub = Stub()
+stub = Stub("modal-app")
 image = Image.debian_slim().pip_install('txtai')
 
 from modal import NetworkFileSystem
