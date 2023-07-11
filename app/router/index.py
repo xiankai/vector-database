@@ -20,8 +20,7 @@ class Document(BaseModel):
 class Documents(BaseModel):
   source: str
   recipient: str
-  docs: list(Document)
-
+  docs: list[Document]
 
 @router.post("/index")
 async def index(docs: Documents):
