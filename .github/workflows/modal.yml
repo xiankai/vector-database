@@ -28,6 +28,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install modal-client
 
+      - name: Install my dependencies
+        run: |
+          pip install -r requirements.txt
 
       - name: Deploy job
         run: |
