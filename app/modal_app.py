@@ -1,9 +1,6 @@
-from app.main import app
-from modal import Image, Stub, asgi_app
+from modal import Image, Stub, NetworkFileSystem, asgi_app
 stub = Stub("modal-app")
 image = Image.debian_slim().pip_install('txtai')
-
-from modal import NetworkFileSystem
 
 volume = NetworkFileSystem.persisted("model-cache-vol")
 @stub.function(
@@ -12,4 +9,5 @@ volume = NetworkFileSystem.persisted("model-cache-vol")
 )
 @asgi_app()
 def fastapi_app():
+  from app.main import app
   return app
