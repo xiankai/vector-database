@@ -1,5 +1,5 @@
 from app.utils import log_sql, format_response
-from app.types import Documents
+from app.types import Documents, Document
 import datetime
 from modal import Image, Stub, NetworkFileSystem, asgi_app
 stub = Stub("modal-app")
@@ -27,7 +27,7 @@ async def search(
   order: str = "desc",
   recipient: str = "",
   source: str = "",
-):
+) -> list[Document]:
   sql_query = f'SELECT text FROM txtai WHERE similar({q}) LIMIT {limit}'
 
   if from_date and to_date:
@@ -48,7 +48,7 @@ async def search(
   return format_response(docs)
 
 @router.get("/day")
-async def day(date: datetime.date, recipient: str, source: str):
+async def day(date: datetime.date, recipient: str, source: str) -> list[Document]:
   docs = embeddings.search(f'SELECT * FROM txtai WHERE date = {date} AND recipient = {recipient} AND source = {source}')
   return format_response(docs)
 
