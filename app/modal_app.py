@@ -1,5 +1,5 @@
 from app.utils import log_sql, format_response
-from app.types import Documents, Document
+from app.types import Documents, DocumentData
 import datetime
 from modal import Image, Stub, NetworkFileSystem, asgi_app
 stub = Stub("modal-app")
@@ -17,7 +17,7 @@ stub["embeddings_image"] = Image.debian_slim().pip_install('txtai').run_function
 from fastapi import FastAPI
 router = FastAPI()
 
-@router.get("/search")
+@router.get("/search", response_model=list[DocumentData])
 async def search(
   q: str,
   from_date: datetime.date = "",
@@ -28,7 +28,7 @@ async def search(
   order: str = "desc",
   recipient: str = "",
   source: str = "",
-) -> list[Document]:
+):
   sql_query = f'SELECT text FROM txtai WHERE similar({q}) LIMIT {limit}'
 
   if from_date and to_date:
@@ -48,11 +48,10 @@ async def search(
   docs = embeddings.search(sql_query)
   return format_response(docs)
 
-@router.get("/day")
-async def day(date: datetime.date, recipient: str, source: str) -> list[Document]:
+@router.get("/day", response_model=list[DocumentData])
+async def day(date: datetime.date, recipient: str, source: str):
   docs = embeddings.search(f'SELECT * FROM txtai WHERE date = {date} AND recipient = {recipient} AND source = {source}')
   return format_response(docs)
-
 
 @router.post("/index")
 async def index(docs: Documents):

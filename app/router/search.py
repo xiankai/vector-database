@@ -1,13 +1,14 @@
 from fastapi import APIRouter
-from app.utils import log_sql
+from app.utils import log_sql, format_response
+from app.types import DocumentData
 import datetime
 
+
 from app.txtai_datastore.embeddings import embeddings
-from app.txtai_datastore.response import format_response
 
 router = APIRouter()
 
-@router.get("/search")
+@router.get("/search", response_model=list[DocumentData])
 async def search(
   q: str,
   from_date: datetime.date = "",
@@ -19,7 +20,7 @@ async def search(
   recipient: str = "",
   source: str = "",
 ):
-  sql_query = f'SELECT text FROM txtai WHERE similar({q}) LIMIT {limit}'
+  sql_query = f'SELECT data FROM txtai WHERE similar({q}) LIMIT {limit}'
 
   if from_date and to_date:
     sql_query += f' AND date BETWEEN $from_date AND $to_date'
@@ -38,7 +39,7 @@ async def search(
   docs = embeddings.search(sql_query)
   return format_response(docs)
 
-@router.get("/day")
+@router.get("/day", response_model=list[DocumentData])
 async def day(date: datetime.date, recipient: str, source: str):
   docs = embeddings.search(f'SELECT * FROM txtai WHERE date = {date} AND recipient = {recipient} AND source = {source}')
   return format_response(docs)
