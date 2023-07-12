@@ -5,13 +5,14 @@ from modal import Image, Stub, NetworkFileSystem, asgi_app
 stub = Stub("modal-app")
 volume = NetworkFileSystem.persisted("model-cache-vol")
 
-stub["embeddings_image"] = Image.debian_slim().pip_install('txtai')
-if stub.is_inside(stub["embeddings_image"]):
+def initialize_embeddings():
   from txtai.embeddings import Embeddings
 
   embeddings = Embeddings({"path": "sentence-transformers/paraphrase-MiniLM-L3-v2", "content": True})
   # Running from the root directory
   embeddings.load(path="/root/txtai_embeddings")
+
+stub["embeddings_image"] = Image.debian_slim().pip_install('txtai').run_function(initialize_embeddings, network_file_systems={"/root/txtai_embeddings": volume})
 
 from fastapi import FastAPI
 router = FastAPI()
