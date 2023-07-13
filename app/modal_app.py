@@ -59,7 +59,8 @@ async def index(docs: Documents):
 
 @stub.function(
   network_file_systems={"/root/txtai_embeddings": volume},
-  image=stub["embeddings_image"]
+  image=stub["embeddings_image"],
+  keep_warm=1
 )
 @asgi_app()
 def fastapi_app():
