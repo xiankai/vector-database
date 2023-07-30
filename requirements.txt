@@ -1,3 +1,3 @@
 txtai
 fastapi
-gunicorn
+firebase_admin

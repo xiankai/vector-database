@@ -1,4 +1,12 @@
+# Python cache
 __pycache__
 venv
-txtai_embeddings
+
+# Logs
 nohup.out
+
+# ENv var
+.env
+
+# Data files
+shared_volume

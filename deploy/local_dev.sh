@@ -1,0 +1,1 @@
+./venv/bin/uvicorn app.local_app:router --reload

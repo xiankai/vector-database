@@ -1,19 +1,27 @@
 from pydantic import BaseModel
+from typing import Tuple
 import datetime
 
+# Data that will be uploaded
 class DocumentData(BaseModel):
   text: str
-  date: datetime.date
   timestamp: int
   recipient: str
   line_number: int
+  source_metadata: dict
 
-class Document(BaseModel):
-  id: str
-  data: DocumentData
-  tags: str
+# Data that will be stored in txtai and given back
+class DocumentDataFull(DocumentData):
+  date: datetime.date
+  recipient: str
+  source: str
+  source_metadata: str # JSON-serialized
 
+# Data formatted for indexing in txtai
+Document = tuple[str, DocumentData, str]
+
+# Data that will be uploaded
 class Documents(BaseModel):
   source: str
   recipient: str
-  docs: list[Document]
+  docs: list[DocumentData]
