@@ -93,7 +93,7 @@ def format_doc_data(data: DocumentData, source: str, recipient: str) -> Document
 
 # txtai wants documents in tuples
 def format_doc(data: DocumentData, source: str, recipient: str):
-  return (itertools.count().next, format_doc_data(data, source, recipient), "")
+  return ('-'.join(recipient, data.timestamp), format_doc_data(data, source, recipient), "")
 
 # pass source/recipient to be stored for each document
 def format_docs(docs: Documents) -> list[Document]:
