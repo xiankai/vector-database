@@ -79,6 +79,40 @@ async def day(date: datetime.date, recipient: str, source: str):
   docs = embeddings.search(sql_query)
   return format_data_response(docs)
 
+@router.get("/first_day", response_model=list[DocumentDataFull])
+async def day(recipient: str, source: str):
+  embeddings = get_embeddings()
+  # Find the first entry, get the date
+  date_query = f'SELECT DATE(date) AS first_day FROM txtai WHERE recipient = "{recipient}" AND source = "{source}" ORDER BY date ASC LIMIT 1'
+  log_sql(date_query)
+  dates = embeddings.search(date_query)
+  if not dates or len(dates) < 1 or 'first_day' not in dates[0]:
+    return []
+  first_day = dates[0]['first_day']
+
+  # then get subsequent entries that have the same date
+  sql_query = f'SELECT data FROM txtai WHERE date = "{first_day}" AND recipient = "{recipient}" AND source = "{source}"'
+  log_sql(sql_query)
+  docs = embeddings.search(sql_query)
+  return format_data_response(docs)
+
+@router.get("/last_day", response_model=list[DocumentDataFull])
+async def day(recipient: str, source: str):
+  embeddings = get_embeddings()
+  # Find the first entry, get the date
+  date_query = f'SELECT DATE(date) AS last_day FROM txtai WHERE recipient = "{recipient}" AND source = "{source}" ORDER BY date DESC LIMIT 1'
+  log_sql(date_query)
+  dates = embeddings.search(date_query)
+  if not dates or len(dates) < 1 or 'last_day' not in dates[0]:
+    return []
+  last_day = dates[0]['last_day']
+
+  # then get subsequent entries that have the same date
+  sql_query = f'SELECT data FROM txtai WHERE date = "{last_day}" AND recipient = "{recipient}" AND source = "{source}"'
+  log_sql(sql_query)
+  docs = embeddings.search(sql_query)
+  return format_data_response(docs)
+
 def format_doc_data(data: DocumentData, source: str, recipient: str) -> DocumentDataFull:
   doc = DocumentDataFull(
     text=data.text,
@@ -106,3 +140,11 @@ async def index(docs: Documents):
   formatted_docs = format_docs(docs)
   embeddings.index(formatted_docs)
   embeddings.save(path="./shared_volume/txtai_embeddings")
+
+@router.delete("/delete")
+async def delete(recipient: str, source: str):
+  embeddings = get_embeddings()
+  sql_query = f'SELECT * FROM txtai WHERE recipient = "{recipient}" AND source = "{source}"'
+  log_sql(sql_query)
+  ids = embeddings.search(sql_query)
+  embeddings.delete(ids)
