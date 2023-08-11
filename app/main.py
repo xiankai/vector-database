@@ -81,19 +81,21 @@ async def day(date: datetime.date, recipient: str, source: str):
   return format_data_response(docs)
 
 def format_doc_data(data: DocumentData, source: str, recipient: str) -> DocumentDataFull:
-  return DocumentDataFull(
+  doc = DocumentDataFull(
     text=data.text,
-    timestamp=data.timestamp,
+    timestamp=int(data.timestamp),
     recipient=recipient,
     line_number=data.line_number,
     source_metadata=json.dumps(data.source_metadata),
-    date=datetime.date.fromtimestamp(data.timestamp).strftime("%Y-%m-%d"),
+    date=datetime.date.fromtimestamp(data.timestamp),
     source=source,
   )
+  doc.date = doc.date.strftime("%Y-%m-%d")
+  return vars(doc)
 
 # txtai wants documents in tuples
 def format_doc(data: DocumentData, source: str, recipient: str):
-  return ('-'.join(recipient, data.timestamp), format_doc_data(data, source, recipient), "")
+  return ('-'.join([recipient, str(data.timestamp)]), format_doc_data(data, source, recipient), "")
 
 # pass source/recipient to be stored for each document
 def format_docs(docs: Documents) -> list[Document]:
