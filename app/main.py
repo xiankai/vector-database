@@ -5,7 +5,6 @@ from app.third_party.embeddings import initialize_embeddings, get_embeddings
 from app.third_party.firebase_admin import initialize_firebase_admin, verify_firebase_token
 import datetime
 import json
-import itertools
 
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -105,6 +104,5 @@ def format_docs(docs: Documents) -> list[Document]:
 async def index(docs: Documents):
   embeddings = get_embeddings()
   formatted_docs = format_docs(docs)
-  print(formatted_docs)
   embeddings.index(formatted_docs)
   embeddings.save(path="./shared_volume/txtai_embeddings")
