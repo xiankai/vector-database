@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
 from app.utils import log_sql
 from app.types import Documents, Document, DocumentData, DocumentDataFull
-from app.third_party.embeddings import initialize_embeddings, get_embeddings
+from app.third_party.embeddings import initialize_embeddings, get_embeddings_by_user
 from app.third_party.firebase_admin import initialize_firebase_admin, verify_firebase_token
+from starlette.requests import Request
 import datetime
 import json
 import os
@@ -18,7 +19,7 @@ async def startup(app: FastAPI):
 
 router = FastAPI(
   lifespan=startup,
-  dependencies=[Depends(verify_firebase_token)]
+  dependencies=[Depends(verify_firebase_token), Depends(get_embeddings_by_user)]
 )
 origins = [os.environ['FRONTEND_URL']]
 router.add_middleware(
@@ -30,8 +31,8 @@ router.add_middleware(
 )
 
 @router.get("/recipients", response_model=list[str])
-async def recipients():
-  embeddings = get_embeddings()
+async def recipients(request: Request):
+  embeddings = request.state.embeddings
   recipients = embeddings.search(f'SELECT DISTINCT recipient FROM txtai')
   return [recipient['recipient'] for recipient in recipients]
 
@@ -40,6 +41,7 @@ def format_data_response(docs: list[DocumentData]):
 
 @router.get("/search", response_model=list[DocumentDataFull])
 async def search(
+  request: Request,
   q: str,
   from_date: datetime.date = "",
   to_date: datetime.date = "",
@@ -66,21 +68,21 @@ async def search(
 
   log_sql(sql_query)
 
-  embeddings = get_embeddings()
+  embeddings = request.state.embeddings
   docs = embeddings.search(sql_query)
   return format_data_response(docs)
 
 @router.get("/day", response_model=list[DocumentDataFull])
-async def day(date: datetime.date, recipient: str, source: str):
-  embeddings = get_embeddings()
+async def day(request: Request, date: datetime.date, recipient: str, source: str):
+  embeddings = request.state.embeddings
   sql_query = f'SELECT data FROM txtai WHERE date = "{date}" AND recipient = "{recipient}" AND source = "{source}"'
   log_sql(sql_query)
   docs = embeddings.search(sql_query)
   return format_data_response(docs)
 
 @router.get("/first_day", response_model=list[DocumentDataFull])
-async def day(recipient: str, source: str):
-  embeddings = get_embeddings()
+async def day(request: Request, recipient: str, source: str):
+  embeddings = request.state.embeddings
   # Find the first entry, get the date
   date_query = f'SELECT DATE(date) AS first_day FROM txtai WHERE recipient = "{recipient}" AND source = "{source}" ORDER BY date ASC LIMIT 1'
   log_sql(date_query)
@@ -96,8 +98,8 @@ async def day(recipient: str, source: str):
   return format_data_response(docs)
 
 @router.get("/last_day", response_model=list[DocumentDataFull])
-async def day(recipient: str, source: str):
-  embeddings = get_embeddings()
+async def day(request: Request, recipient: str, source: str):
+  embeddings = request.state.embeddings
   # Find the first entry, get the date
   date_query = f'SELECT DATE(date) AS last_day FROM txtai WHERE recipient = "{recipient}" AND source = "{source}" ORDER BY date DESC LIMIT 1'
   log_sql(date_query)
@@ -134,15 +136,15 @@ def format_docs(docs: Documents) -> list[Document]:
   return [format_doc(doc, docs.source, docs.recipient) for doc in docs.docs]
 
 @router.post("/index")
-async def index(docs: Documents):
-  embeddings = get_embeddings()
+async def index(request: Request, docs: Documents):
+  embeddings =  request.state.embeddings
   formatted_docs = format_docs(docs)
   embeddings.index(formatted_docs)
   embeddings.save(path="./shared_volume/txtai_embeddings")
 
 @router.delete("/delete")
-async def delete(recipient: str, source: str):
-  embeddings = get_embeddings()
+async def delete(request: Request, recipient: str, source: str):
+  embeddings = request.state.embeddings
   sql_query = f'SELECT * FROM txtai WHERE recipient = "{recipient}" AND source = "{source}"'
   log_sql(sql_query)
   ids = embeddings.search(sql_query)
