@@ -5,6 +5,7 @@ from app.third_party.embeddings import initialize_embeddings, get_embeddings
 from app.third_party.firebase_admin import initialize_firebase_admin, verify_firebase_token
 import datetime
 import json
+import os
 
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,12 +20,10 @@ router = FastAPI(
   lifespan=startup,
   dependencies=[Depends(verify_firebase_token)]
 )
-origins = [
-  "http://localhost:3000",
-]
+origins = [os.environ['FRONTEND_URL']]
 router.add_middleware(
   CORSMiddleware,
-  allow_origins=["*"],
+  allow_origins=origins,
   allow_credentials=True,
   allow_methods=["*"],
   allow_headers=["*"],
