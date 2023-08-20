@@ -144,7 +144,7 @@ def format_docs(docs: Documents) -> list[Document]:
 async def index(request: Request, docs: Documents):
   embeddings =  request.state.embeddings
   formatted_docs = format_docs(docs)
-  embeddings.index(formatted_docs)
+  embeddings.upsert(formatted_docs)
   embeddings.save(path=request.state.user_path)
 
 @router.delete("/delete")
