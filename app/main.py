@@ -32,6 +32,7 @@ router.add_middleware(
 
 @router.get("/recipients", response_model=list[str])
 async def recipients(request: Request):
+  if not request.state.has_data: return []
   embeddings = request.state.embeddings
   recipients = embeddings.search(f'SELECT DISTINCT recipient FROM txtai')
   return [recipient['recipient'] for recipient in recipients]
@@ -140,7 +141,7 @@ async def index(request: Request, docs: Documents):
   embeddings =  request.state.embeddings
   formatted_docs = format_docs(docs)
   embeddings.index(formatted_docs)
-  embeddings.save(path="./shared_volume/txtai_embeddings")
+  embeddings.save(path=request.state.user_path)
 
 @router.delete("/delete")
 async def delete(request: Request, recipient: str, source: str):
