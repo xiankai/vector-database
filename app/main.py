@@ -34,7 +34,9 @@ router.add_middleware(
 async def recipients(request: Request):
   if not request.state.has_data: return []
   embeddings = request.state.embeddings
-  recipients = embeddings.search(f'SELECT DISTINCT recipient FROM txtai')
+  sql_query = f'SELECT DISTINCT recipient FROM txtai'
+  log_sql(sql_query)
+  recipients = embeddings.search(sql_query)
   return [recipient['recipient'] for recipient in recipients]
 
 def format_data_response(docs: list[DocumentData]):
