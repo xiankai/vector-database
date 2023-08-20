@@ -17,7 +17,7 @@ def initialize_firebase_admin():
 
 def verify_firebase_token(request: Request, cred: HTTPAuthorizationCredentials=Depends(HTTPBearer(auto_error=False))):
   if not cred:
-    raise HTTPException(status_code=400, detail='Authorization header is empty')
+    raise HTTPException(status_code=401, detail='Authorization header is empty')
 
   firebase_token = cred.credentials
 
