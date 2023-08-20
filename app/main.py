@@ -46,8 +46,8 @@ def format_data_response(docs: list[DocumentData]):
 async def search(
   request: Request,
   q: str,
-  from_date: datetime.date = "",
-  to_date: datetime.date = "",
+  from_date: str = None,
+  to_date: str = None,
   limit: int = 10,
   offset: int = 0,
   sort_by: str = "timestamp_ms",
@@ -55,7 +55,7 @@ async def search(
   recipient: str = "",
   source: str = "",
 ):
-  sql_query = f'SELECT data FROM txtai WHERE similar({q}) LIMIT {limit}'
+  sql_query = f'SELECT data FROM txtai WHERE similar({q})'
 
   if from_date and to_date:
     sql_query += f' AND date BETWEEN "{from_date}" AND "{to_date}"'
@@ -68,6 +68,8 @@ async def search(
     sql_query += f' AND recipient = "{recipient}"'
   if source:
     sql_query += f' AND source = "{source}"'
+
+  sql_query += f' LIMIT {limit}'
 
   log_sql(sql_query)
 
