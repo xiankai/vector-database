@@ -18,7 +18,7 @@ def get_embeddings():
 def get_embeddings_by_user(request: Request):
   from txtai.embeddings import Embeddings
   model_path = os.environ['MODEL_PATH']
-  embeddings = Embeddings({"path": model_path, "content": True})
+  embeddings = Embeddings({"path": model_path, "content": True, "sqlite": { "wal": True } })
 
   user_id = request.state.user["user_id"]
   user_path = f'./shared_volume/txtai_embeddings/{user_id}'
