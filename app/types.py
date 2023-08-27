@@ -6,13 +6,14 @@ import datetime
 class DocumentData(BaseModel):
   text: str
   timestamp: int
-  recipient: str
+  sender: str
   line_number: int
   source_metadata: dict
 
 # Data that will be stored in txtai and given back
 class DocumentDataFull(DocumentData):
   date: datetime.date
+  sender: str
   recipient: str
   source: str
   source_metadata: str # JSON-serialized

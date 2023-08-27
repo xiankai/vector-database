@@ -31,10 +31,10 @@ router.add_middleware(
 )
 
 @router.get("/recipients", response_model=list[str])
-async def recipients(request: Request):
+async def recipients(request: Request, source: str):
   if not request.state.has_data: return []
   embeddings = request.state.embeddings
-  sql_query = f'SELECT DISTINCT recipient FROM txtai'
+  sql_query = f'SELECT DISTINCT recipient FROM txtai WHERE source = "{source}"'
   log_sql(sql_query)
   recipients = embeddings.search(sql_query)
   has_recipient = lambda recipient: 'recipient' in recipient and recipient['recipient']
@@ -124,6 +124,7 @@ def format_doc_data(data: DocumentData, source: str, recipient: str) -> Document
   doc = DocumentDataFull(
     text=data.text,
     timestamp=int(data.timestamp),
+    sender=data.sender,
     recipient=recipient,
     line_number=data.line_number,
     source_metadata=json.dumps(data.source_metadata),
