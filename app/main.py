@@ -87,7 +87,7 @@ async def day(request: Request, date: datetime.date, recipient: str, source: str
   return format_data_response(docs)
 
 @router.get("/first_day", response_model=list[DocumentDataFull])
-async def day(request: Request, recipient: str, source: str):
+async def first_day(request: Request, recipient: str, source: str):
   embeddings = request.state.embeddings
   # Find the first entry, get the date
   date_query = f'SELECT DATE(date) AS first_day FROM txtai WHERE recipient = "{recipient}" AND source = "{source}" ORDER BY date ASC LIMIT 1'
@@ -104,7 +104,7 @@ async def day(request: Request, recipient: str, source: str):
   return format_data_response(docs)
 
 @router.get("/last_day", response_model=list[DocumentDataFull])
-async def day(request: Request, recipient: str, source: str):
+async def last_day(request: Request, recipient: str, source: str):
   embeddings = request.state.embeddings
   # Find the first entry, get the date
   date_query = f'SELECT DATE(date) AS last_day FROM txtai WHERE recipient = "{recipient}" AND source = "{source}" ORDER BY date DESC LIMIT 1'
