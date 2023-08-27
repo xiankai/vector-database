@@ -37,7 +37,8 @@ async def recipients(request: Request):
   sql_query = f'SELECT DISTINCT recipient FROM txtai'
   log_sql(sql_query)
   recipients = embeddings.search(sql_query)
-  return [recipient['recipient'] for recipient in recipients]
+  has_recipient = lambda recipient: 'recipient' in recipient and recipient['recipient']
+  return [recipient['recipient'] for recipient in recipients if has_recipient(recipient)]
 
 def format_data_response(docs: list[DocumentData]):
   return [json.loads(doc['data']) for doc in docs]
