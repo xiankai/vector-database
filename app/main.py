@@ -154,5 +154,6 @@ async def delete(request: Request, recipient: str, source: str):
   embeddings = request.state.embeddings
   sql_query = f'SELECT id FROM txtai WHERE recipient = "{recipient}" AND source = "{source}" LIMIT 10000'
   log_sql(sql_query)
-  ids = embeddings.search(sql_query)
-  embeddings.delete(ids)
+  ids_to_delete = embeddings.search(sql_query)
+  ids_deleted = embeddings.delete([id_to_delete['id'] for id_to_delete in ids_to_delete])
+  embeddings.save(path=request.state.user_path)
