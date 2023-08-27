@@ -49,7 +49,7 @@ async def search(
   q: str,
   from_date: str = None,
   to_date: str = None,
-  limit: int = 10,
+  limit: int = 100,
   offset: int = 0,
   sort_by: str = "timestamp_ms",
   order: str = "desc",
@@ -81,7 +81,7 @@ async def search(
 @router.get("/day", response_model=list[DocumentDataFull])
 async def day(request: Request, date: datetime.date, recipient: str, source: str):
   embeddings = request.state.embeddings
-  sql_query = f'SELECT data FROM txtai WHERE date = "{date}" AND recipient = "{recipient}" AND source = "{source}"'
+  sql_query = f'SELECT data FROM txtai WHERE date = "{date}" AND recipient = "{recipient}" AND source = "{source}" LIMIT 100'
   log_sql(sql_query)
   docs = embeddings.search(sql_query)
   return format_data_response(docs)
@@ -98,7 +98,7 @@ async def day(request: Request, recipient: str, source: str):
   first_day = dates[0]['first_day']
 
   # then get subsequent entries that have the same date
-  sql_query = f'SELECT data FROM txtai WHERE date = "{first_day}" AND recipient = "{recipient}" AND source = "{source}"'
+  sql_query = f'SELECT data FROM txtai WHERE date = "{first_day}" AND recipient = "{recipient}" AND source = "{source}" LIMIT 100'
   log_sql(sql_query)
   docs = embeddings.search(sql_query)
   return format_data_response(docs)
@@ -115,7 +115,7 @@ async def day(request: Request, recipient: str, source: str):
   last_day = dates[0]['last_day']
 
   # then get subsequent entries that have the same date
-  sql_query = f'SELECT data FROM txtai WHERE date = "{last_day}" AND recipient = "{recipient}" AND source = "{source}"'
+  sql_query = f'SELECT data FROM txtai WHERE date = "{last_day}" AND recipient = "{recipient}" AND source = "{source}" LIMIT 100'
   log_sql(sql_query)
   docs = embeddings.search(sql_query)
   return format_data_response(docs)
@@ -152,7 +152,7 @@ async def index(request: Request, docs: Documents):
 @router.delete("/delete")
 async def delete(request: Request, recipient: str, source: str):
   embeddings = request.state.embeddings
-  sql_query = f'SELECT * FROM txtai WHERE recipient = "{recipient}" AND source = "{source}"'
+  sql_query = f'SELECT id FROM txtai WHERE recipient = "{recipient}" AND source = "{source}" LIMIT 10000'
   log_sql(sql_query)
   ids = embeddings.search(sql_query)
   embeddings.delete(ids)
