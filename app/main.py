@@ -37,6 +37,7 @@ async def recipients(request: Request, source: str):
   sql_query = f'SELECT DISTINCT recipient FROM txtai WHERE source = "{source}"'
   log_sql(sql_query)
   recipients = embeddings.search(sql_query)
+  embeddings.close()
   has_recipient = lambda recipient: 'recipient' in recipient and recipient['recipient']
   return [recipient['recipient'] for recipient in recipients if has_recipient(recipient)]
 
@@ -76,6 +77,7 @@ async def search(
 
   embeddings = request.state.embeddings
   docs = embeddings.search(sql_query)
+  embeddings.close()
   return format_data_response(docs)
 
 @router.get("/day", response_model=list[DocumentDataFull])
@@ -84,6 +86,7 @@ async def day(request: Request, date: datetime.date, recipient: str, source: str
   sql_query = f'SELECT data FROM txtai WHERE date = "{date}" AND recipient = "{recipient}" AND source = "{source}" LIMIT 100'
   log_sql(sql_query)
   docs = embeddings.search(sql_query)
+  embeddings.close()
   return format_data_response(docs)
 
 @router.get("/first_day", response_model=list[DocumentDataFull])
@@ -101,6 +104,7 @@ async def first_day(request: Request, recipient: str, source: str):
   sql_query = f'SELECT data FROM txtai WHERE date = "{first_day}" AND recipient = "{recipient}" AND source = "{source}" LIMIT 100'
   log_sql(sql_query)
   docs = embeddings.search(sql_query)
+  embeddings.close()
   return format_data_response(docs)
 
 @router.get("/last_day", response_model=list[DocumentDataFull])
@@ -118,6 +122,7 @@ async def last_day(request: Request, recipient: str, source: str):
   sql_query = f'SELECT data FROM txtai WHERE date = "{last_day}" AND recipient = "{recipient}" AND source = "{source}" LIMIT 100'
   log_sql(sql_query)
   docs = embeddings.search(sql_query)
+  embeddings.close()
   return format_data_response(docs)
 
 def format_doc_data(data: DocumentData, source: str, recipient: str) -> DocumentDataFull:
@@ -148,6 +153,7 @@ async def index(request: Request, docs: Documents):
   formatted_docs = format_docs(docs)
   embeddings.upsert(formatted_docs)
   embeddings.save(path=request.state.user_path)
+  embeddings.close()
 
 @router.delete("/delete")
 async def delete(request: Request, recipient: str, source: str):
@@ -157,3 +163,4 @@ async def delete(request: Request, recipient: str, source: str):
   ids_to_delete = embeddings.search(sql_query)
   ids_deleted = embeddings.delete([id_to_delete['id'] for id_to_delete in ids_to_delete])
   embeddings.save(path=request.state.user_path)
+  embeddings.close()
