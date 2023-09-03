@@ -1,5 +1,5 @@
 from app.main import router
-from app.third_party.embeddings import initialize_embeddings
+from app.third_party.txtai import initialize_embeddings
 from app.third_party.firebase_admin import initialize_firebase_admin
 from modal import Image, Stub, NetworkFileSystem, Secret, asgi_app
 stub = Stub("modal-app")

@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from app.utils import log_sql
 from app.types import Documents, Document, DocumentData, DocumentDataFull
-from app.third_party.embeddings import initialize_embeddings, get_embeddings_by_user
+from app.third_party.txtai import initialize_embeddings, get_embeddings_by_user
 from app.third_party.firebase_admin import initialize_firebase_admin, verify_firebase_token
 from starlette.requests import Request
 import datetime
