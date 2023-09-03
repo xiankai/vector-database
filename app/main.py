@@ -34,7 +34,7 @@ router.add_middleware(
 async def recipients(request: Request, source: str):
   if not request.state.has_data: return []
   embeddings = request.state.embeddings
-  sql_query = f'SELECT DISTINCT recipient FROM txtai WHERE source = "{source}"'
+  sql_query = f'SELECT DISTINCT recipient FROM txtai WHERE source = "{source}" LIMIT 100'
   log_sql(sql_query)
   recipients = embeddings.search(sql_query)
   embeddings.close()
