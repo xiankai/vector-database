@@ -1,0 +1,5 @@
+txtai==6.0.0
+fastapi
+firebase_admin
+uvicorn
+python-dotenv
