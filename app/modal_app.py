@@ -1,9 +1,9 @@
 from app.main import router
 from app.third_party.txtai import initialize_embeddings
 from app.third_party.firebase_admin import initialize_firebase_admin
-from modal import Image, Stub, NetworkFileSystem, Secret, asgi_app
-stub = Stub("modal-app")
-volume = NetworkFileSystem.persisted("model-cache-vol")
+from modal import Image, App, NetworkFileSystem, Secret, asgi_app
+stub = App("modal-app")
+volume = NetworkFileSystem.from_name("model-cache-vol", create_if_missing=True)
 mount_point = "/root/shared_volume"
 network_file_systems = {mount_point: volume}
 
