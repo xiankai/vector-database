@@ -13,7 +13,7 @@ embeddings_image = Image.debian_slim() \
 @stub.function(
   image=embeddings_image,
   container_idle_timeout=1200,
-  secret=[Secret.from_name("chat-history")],
+  secrets=[Secret.from_name("chat-history")],
   network_file_systems={mount_point: volume},
 )
 @asgi_app()
